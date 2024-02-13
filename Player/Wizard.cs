@@ -4,7 +4,7 @@ using UnityEngine;
 public class Wizard : MonoBehaviour
 {
     public PlayerConfig playerConfig;
-    public FrostboltData frostboltData;
+    public SpellInventory spellInventory;
     public CandleData candleData;
     private SpriteAnimator spriteAnimator;
     private SpriteRenderer spriteRenderer;
@@ -34,6 +34,8 @@ public class Wizard : MonoBehaviour
         UIManager.FindAndUpdateHealth(curHealth, maxHealth);
 
         gameObject.AddComponent<CapsuleCollider2D>();
+
+        SpellInventory.Build(gameObject);
     }
 
     private void Update()
@@ -70,7 +72,9 @@ public class Wizard : MonoBehaviour
             animationToPlay = playerConfig.attackAnimation;
             attacking = true;
             Vector3 target = FindObjectOfType<Camera>().ScreenToWorldPoint(Input.mousePosition);
-            Frostbolt.Throw(frostboltData, transform.position + Vector3.down * spriteRenderer.size.y / 2, target);
+            // Frostbolt.Throw(frostboltData, transform.position + Vector3.down * spriteRenderer.size.y / 2, target);
+            spellInventory.Cast(transform.position + Vector3.down * spriteRenderer.size.y / 2, target);
+
             Invoke(nameof(EndAttack), 0.2f);
         }
         if (attacking) animationToPlay = playerConfig.attackAnimation;

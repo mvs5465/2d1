@@ -7,6 +7,11 @@ public class CandleData : SpellData
     public SpriteAnimatorData candleLit;
     public int layer;
 
+    public override void Cast(Vector3 startPos, Vector3 targetPos)
+    {
+        return;
+    }
+
     public override SpriteAnimatorData GetSpellbookAnimation()
     {
         return candleOff;

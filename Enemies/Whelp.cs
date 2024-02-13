@@ -8,6 +8,7 @@ public class Whelp : Entity
     private Rigidbody2D rb;
     private GameObject target;
     private bool coolingDown = false;
+    private bool facingRight = false;
     private Vector3 startPos;
 
     private class WhelpAggroManager : MonoBehaviour
@@ -29,6 +30,14 @@ public class Whelp : Entity
                 parentWhelp.NotifyAggroEnter(other.gameObject);
             }
         }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.gameObject.GetComponent<Wizard>())
+            {
+                parentWhelp.NotifyAggroExit();
+            }
+        }
     }
 
     protected override void StartCall()
@@ -41,6 +50,7 @@ public class Whelp : Entity
         gameObject.AddComponent<CircleCollider2D>();
         WhelpAggroManager.Build(this, whelpData.aggroRadius);
         startPos = transform.position;
+        gameObject.layer = whelpData.layer;
     }
 
     protected override void Update()
@@ -49,7 +59,18 @@ public class Whelp : Entity
         if (target && !coolingDown)
         {
             coolingDown = true;
+            Fireball.Throw(fireballData, transform.position, target.transform.position);
             Invoke(nameof(ClearCooldown), whelpData.fireballCooldown);
+        }
+        if (rb.velocity.x < 0 && facingRight)
+        {
+            facingRight = false;
+            gameObject.GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else if (rb.velocity.x > 0 && !facingRight)
+        {
+            facingRight = true;
+            gameObject.GetComponent<SpriteRenderer>().flipX = false;
         }
     }
 
@@ -88,7 +109,6 @@ public class Whelp : Entity
 
     public void NotifyAggroEnter(GameObject target)
     {
-        Debug.Log("Whelp sees a target!");
         this.target = target;
         InvokeRepeating(nameof(ApproachTarget), 1, 1);
         CancelInvoke(nameof(ReturnHome));
@@ -96,8 +116,7 @@ public class Whelp : Entity
 
     public void NotifyAggroExit()
     {
-        Debug.Log("Whelp lost the target.");
-        this.target = null;
+        target = null;
         InvokeRepeating(nameof(ReturnHome), 1, 1);
         CancelInvoke(nameof(ApproachTarget));
     }

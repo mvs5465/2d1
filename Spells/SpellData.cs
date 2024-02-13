@@ -2,14 +2,18 @@ using UnityEngine;
 
 public abstract class SpellData : ScriptableObject
 {
-    private bool pickedUp = false;
+    public string spellName;
     public float spellDisplaySize = 0.75f;
+
+    private bool pickedUp = false;
 
     public virtual void Pickup()
     {
         if (pickedUp) return;
         pickedUp = true;
-        Debug.Log(string.Format("Picked up {0}", name));
+        FindObjectOfType<Wizard>().gameObject.GetComponentInChildren<SpellInventory>().AddSpell(this);
+        Debug.Log(string.Format("Picked up {0}", spellName));
     }
     public abstract SpriteAnimatorData GetSpellbookAnimation();
+    public abstract void Cast(Vector3 startPos, Vector3 targetPos);
 }

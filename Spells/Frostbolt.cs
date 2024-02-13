@@ -69,8 +69,9 @@ public class Frostbolt : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeAll;
         spriteAnimator.SetAnimation(frostboltData.explosionAnimation);
 
+        CancelInvoke(nameof(End));
         Invoke(nameof(Pulse), 0);
-        Invoke(nameof(End), 1);
+        Invoke(nameof(End), frostboltData.explosionAnimation.GetDuration());
     }
 
     private void Pulse()

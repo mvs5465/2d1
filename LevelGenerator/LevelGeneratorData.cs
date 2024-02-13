@@ -5,6 +5,8 @@ public class LevelGeneratorData : ScriptableObject
 {
     public GameObject summerHousePrefab;
     public GameObject browner;
+    public GameObject whelp;
+    public GameObject golem;
     public Tile dirtUL;
     public Tile dirtUM;
     public Tile dirtUR;

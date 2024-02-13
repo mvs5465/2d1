@@ -22,6 +22,7 @@ public class Fireball : MonoBehaviour
 
     private void Start()
     {
+        gameObject.transform.localScale *= fireballData.spellDisplaySize;
         gameObject.layer = fireballData.layer;
         spriteAnimator = SpriteAnimator.Build(gameObject, fireballData.boltAnimation);
         circleCollider2D = gameObject.AddComponent<CircleCollider2D>();
@@ -47,8 +48,8 @@ public class Fireball : MonoBehaviour
 
     private void RandomizeLight()
     {
-        boltLight.intensity = UnityEngine.Random.Range(fireballData.lightIntensity / 3, fireballData.lightIntensity);
-        float whiteBias = UnityEngine.Random.Range(0f, 1f);
+        boltLight.intensity = Random.Range(fireballData.lightIntensity / 3, fireballData.lightIntensity);
+        float whiteBias = Random.Range(0f, 1f);
         Color whiteLevel = Color.white * whiteBias;
         Color redLevel = Color.red * (1 - whiteBias);
         boltLight.color = whiteLevel + redLevel;
@@ -62,6 +63,11 @@ public class Fireball : MonoBehaviour
         {
             entity.Damage(fireballData.damage);
         }
+        Wizard wizard = other.gameObject.GetComponent<Wizard>();
+        if (wizard)
+        {
+            wizard.Damage(fireballData.pulseDamage);
+        }
 
         circleCollider2D.isTrigger = true;
         circleCollider2D.radius *= 2;
@@ -69,8 +75,9 @@ public class Fireball : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeAll;
         spriteAnimator.SetAnimation(fireballData.explosionAnimation);
 
+        CancelInvoke(nameof(End));
         Invoke(nameof(Pulse), 0);
-        Invoke(nameof(End), 1);
+        Invoke(nameof(End), fireballData.explosionAnimation.GetDuration());
     }
 
     private void Pulse()
@@ -84,7 +91,12 @@ public class Fireball : MonoBehaviour
         Entity entity = other.gameObject.GetComponent<Entity>();
         if (entity)
         {
-            entity.Damage(1);
+            entity.Damage(fireballData.pulseDamage);
+        }
+        Wizard wizard = other.gameObject.GetComponent<Wizard>();
+        if (wizard)
+        {
+            wizard.Damage(fireballData.pulseDamage);
         }
     }
 

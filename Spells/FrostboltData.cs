@@ -15,6 +15,11 @@ public class FrostboltData : SpellData
     public float lightOuterRadius = 4;
     public float lightFalloffIntensity = 1;
 
+    public override void Cast(Vector3 startPos, Vector3 targetPos)
+    {
+        Frostbolt.Throw(this, startPos, targetPos);
+    }
+
     public override SpriteAnimatorData GetSpellbookAnimation()
     {
         return boltAnimation;
@@ -23,6 +28,5 @@ public class FrostboltData : SpellData
     public override void Pickup()
     {
         base.Pickup();
-        FindObjectOfType<Wizard>().knowsFrostBolt = true;
     }
 }

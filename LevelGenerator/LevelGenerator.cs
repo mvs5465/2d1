@@ -124,6 +124,7 @@ public class LevelGenerator : MonoBehaviour
         // setup
         Stopwatch sw = new();
         sw.Start();
+        Destroy(GameObject.Find("SummerHouse"));
         if (levelMapContainer) Destroy(levelMapContainer);
         levelMapContainer = Utility.AttachChildObject(gameObject, "LevelMapContainer");
         Grid grid = Utility.AttachChildObject(levelMapContainer, "GeneratedGrid").AddComponent<Grid>();
@@ -151,11 +152,21 @@ public class LevelGenerator : MonoBehaviour
             // Roll the dice to spawn enemy
             if (i > 0 && i < caveLength - 1)
             {
-                int diceRoll = UnityEngine.Random.Range(0, 10);
-                if (diceRoll > 4)
+                int diceRoll = Random.Range(0, 3);
+                if (diceRoll == 2)
                 {
                     GameObject browner = Instantiate(levelGeneratorData.browner, grid.GetCellCenterWorld(new Vector3Int(curX + boxWidth / 2, curY)), Quaternion.identity);
                     browner.transform.parent = levelMapContainer.transform;
+                }
+                else if (diceRoll == 1)
+                {
+                    GameObject whelp = Instantiate(levelGeneratorData.whelp, grid.GetCellCenterWorld(new Vector3Int(curX + boxWidth / 2, curY)), Quaternion.identity);
+                    whelp.transform.parent = levelMapContainer.transform;
+                }
+                else if (diceRoll == 0)
+                {
+                    GameObject golem = Instantiate(levelGeneratorData.golem, grid.GetCellCenterWorld(new Vector3Int(curX + boxWidth / 2, curY)), Quaternion.identity);
+                    golem.transform.parent = levelMapContainer.transform;
                 }
             }
 

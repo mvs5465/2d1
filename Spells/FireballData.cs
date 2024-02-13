@@ -3,6 +3,7 @@ using UnityEngine;
 public class FireballData : SpellData
 {
     public int damage = 1;
+    public int pulseDamage = 1;
     public float range = 1f;
     public float speed = 5f;
     public int layer = 0;
@@ -14,6 +15,11 @@ public class FireballData : SpellData
     public float lightInnerRadius = 3;
     public float lightOuterRadius = 4;
     public float lightFalloffIntensity = 1;
+
+    public override void Cast(Vector3 startPos, Vector3 targetPos)
+    {
+        Fireball.Throw(this, startPos, targetPos);
+    }
 
     public override SpriteAnimatorData GetSpellbookAnimation()
     {
