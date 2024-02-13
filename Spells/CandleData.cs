@@ -17,9 +17,8 @@ public class CandleData : SpellData
         return candleOff;
     }
 
-    public override void Pickup()
+    public override void Pickup(SpellInventory spellInventory)
     {
-        base.Pickup();
         Candle.Build(FindObjectOfType<Wizard>().gameObject, this);
     }
 }

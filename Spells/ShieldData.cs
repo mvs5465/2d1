@@ -19,9 +19,8 @@ public class ShieldData : SpellData
         return shieldIdle;
     }
 
-    public override void Pickup()
+    public override void Pickup(SpellInventory spellInventory)
     {
-        base.Pickup();
         Shield.Build(FindObjectOfType<Wizard>().gameObject, this);
     }
 }

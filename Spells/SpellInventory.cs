@@ -38,13 +38,25 @@ public class SpellInventory : MonoBehaviour
 
     public void Cast(Vector3 startPos, Vector3 targetPos)
     {
+        if (!currentSpell)
+        {
+            Debug.Log("Current spell null");
+            return;
+        }
+        Debug.Log("Casting " + currentSpell.spellName);
         currentSpell.Cast(startPos, targetPos);
     }
 
     public void AddSpell(SpellData spellData)
     {
+        Debug.Log("Player picked up spell " + spellData.spellName);
         spells.Add(spellData);
-        if (!currentSpell) currentSpell = spells[0];
+        currentSpell = spells[0];
+    }
+
+    public int GetSpellCount()
+    {
+        return spells.Count;
     }
 
 

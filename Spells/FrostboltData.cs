@@ -24,9 +24,4 @@ public class FrostboltData : SpellData
     {
         return boltAnimation;
     }
-
-    public override void Pickup()
-    {
-        base.Pickup();
-    }
 }

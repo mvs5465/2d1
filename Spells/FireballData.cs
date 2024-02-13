@@ -25,10 +25,4 @@ public class FireballData : SpellData
     {
         return boltAnimation;
     }
-
-    public override void Pickup()
-    {
-        base.Pickup();
-        FindObjectOfType<Wizard>().knowsFrostBolt = true;
-    }
 }

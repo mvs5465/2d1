@@ -15,7 +15,6 @@ public class Wizard : MonoBehaviour
     private int money;
     private bool facingRight = true;
     private bool attacking = false;
-    public bool knowsFrostBolt = false;
 
     private void Start()
     {
@@ -35,7 +34,7 @@ public class Wizard : MonoBehaviour
 
         gameObject.AddComponent<CapsuleCollider2D>();
 
-        SpellInventory.Build(gameObject);
+        spellInventory = SpellInventory.Build(gameObject);
     }
 
     private void Update()
@@ -45,19 +44,21 @@ public class Wizard : MonoBehaviour
         {
             if (facingRight) Flip();
             animationToPlay = playerConfig.runAnimation;
-            if (Math.Abs(rb.velocity.x) < curMaxSpeed)
-            {
-                rb.AddForce(Vector2.left);
-            };
+            // if (Math.Abs(rb.velocity.x) < curMaxSpeed)
+            // {
+            //     rb.AddForce(Vector2.left);
+            // };
+            rb.velocity = new Vector2(-curMaxSpeed, rb.velocity.y);
         }
         else if (Input.GetKey(KeyCode.D))
         {
             if (!facingRight) Flip();
             animationToPlay = playerConfig.runAnimation;
-            if (Math.Abs(rb.velocity.x) < curMaxSpeed)
-            {
-                rb.AddForce(Vector2.right);
-            };
+            // if (Math.Abs(rb.velocity.x) < curMaxSpeed)
+            // {
+            //     rb.AddForce(Vector2.right);
+            // };
+            rb.velocity = new Vector2(curMaxSpeed, rb.velocity.y);
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -67,13 +68,13 @@ public class Wizard : MonoBehaviour
             }
             animationToPlay = playerConfig.idleAnimation;
         }
-        if (knowsFrostBolt && Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             animationToPlay = playerConfig.attackAnimation;
             attacking = true;
-            Vector3 target = FindObjectOfType<Camera>().ScreenToWorldPoint(Input.mousePosition);
+            Vector3 targetPos = FindObjectOfType<Camera>().ScreenToWorldPoint(Input.mousePosition);
             // Frostbolt.Throw(frostboltData, transform.position + Vector3.down * spriteRenderer.size.y / 2, target);
-            spellInventory.Cast(transform.position + Vector3.down * spriteRenderer.size.y / 2, target);
+            spellInventory.Cast(transform.position + Vector3.down * spriteRenderer.size.y / 2, targetPos);
 
             Invoke(nameof(EndAttack), 0.2f);
         }

@@ -69,7 +69,7 @@ public class Golem : Entity
         rb.gravityScale = 1;
         rb.drag = 0.9f;
         rb.mass *= 10;
-        gameObject.AddComponent<PolygonCollider2D>();
+        gameObject.AddComponent<CapsuleCollider2D>();
         gam = GolemAggroManager.Build(this, golemData.aggroRadius);
         startPos = new Vector2(transform.position.x, transform.position.y);
         gameObject.layer = golemData.layer;

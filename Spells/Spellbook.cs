@@ -71,7 +71,13 @@ public class Spellbook : MonoBehaviour
     {
         if (inRange && Input.GetKeyDown(KeyCode.E))
         {
-            spellData.Pickup();
+            // FindObjectOfType<SpellInventory>().AddSpell(spellData);
+            SpellInventory spellInventory = FindObjectOfType<SpellInventory>();
+            if (!spellInventory) Debug.Log("Spell inventory not found!");
+            spellData.Pickup(spellInventory);
+            Debug.Log("Spellbook was picked up for " + spellData.spellName);
+
+            Debug.Log("New player spell count: " + spellInventory.GetSpellCount());
             Destroy(gameObject);
         }
     }
