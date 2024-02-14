@@ -24,7 +24,7 @@ public class Fireball : MonoBehaviour
     {
         gameObject.transform.localScale *= fireballData.spellDisplaySize;
         gameObject.layer = fireballData.layer;
-        spriteAnimator = SpriteAnimator.Build(gameObject, fireballData.boltAnimation);
+        spriteAnimator = SpriteAnimator.Build(gameObject, fireballData.boltAnimation, "Effect");
         circleCollider2D = gameObject.AddComponent<CircleCollider2D>();
         rb = gameObject.AddComponent<Rigidbody2D>();
         rb.gravityScale = fireballData.gravityScale;
@@ -70,7 +70,8 @@ public class Fireball : MonoBehaviour
         }
 
         circleCollider2D.isTrigger = true;
-        circleCollider2D.radius *= 2;
+        // circleCollider2D.radius *= 2;
+        gameObject.transform.localScale *= 2;
 
         rb.constraints = RigidbodyConstraints2D.FreezeAll;
         spriteAnimator.SetAnimation(fireballData.explosionAnimation);

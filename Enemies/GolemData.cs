@@ -11,4 +11,5 @@ public class GolemData : ScriptableObject
     public float attackRange = 2;
     public float maxSpeed = 2;
     public int layer = 0;
+    public QuakeData quakeData;
 }

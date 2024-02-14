@@ -1,5 +1,5 @@
 using UnityEngine;
-[CreateAssetMenu(menuName = "ScriptableObjects/CandleData")]
+[CreateAssetMenu(menuName = "ScriptableObjects/Spells/CandleData")]
 public class CandleData : SpellData
 {
     public SpriteAnimatorData candleOff;

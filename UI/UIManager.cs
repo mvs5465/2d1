@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,6 +10,14 @@ public class UIManager : MonoBehaviour
     private int curHealth;
     private int maxHealth;
     private int money;
+    public Camera mainCamera;
+    public Wizard player;
+    public static Action NotifyRedraw;
+
+    private void Awake()
+    {
+        NotifyRedraw += Draw;
+    }
 
     private void Start()
     {
@@ -53,8 +62,7 @@ public class UIManager : MonoBehaviour
     private void Draw()
     {
         if (uiContainer) Destroy(uiContainer);
-        Camera camera = FindObjectOfType<Camera>();
-        uiContainer = Utility.AttachChildObject(camera.gameObject, "UIContainer");
+        uiContainer = Utility.AttachChildObject(mainCamera.gameObject, "UIContainer");
 
         GameObject restartButtonContainer = Utility.AttachChildObject(uiContainer, "UIHealthText");
         UIDocument uiDocument = restartButtonContainer.AddComponent<UIDocument>();
@@ -120,12 +128,47 @@ public class UIManager : MonoBehaviour
             healthHeart.sprite = gameConfig.healthHeartSprite;
             healthWidget.Add(healthHeart);
         }
+
+        DrawSpellWidget(uiDocument);
+    }
+
+    private void DrawSpellWidget(UIDocument uiDocument)
+    {
+        if (!player) Debug.LogError("Missing player!");
+        if (!player.spellInventory)
+        {
+            Debug.LogError("Player missing spellInventory");
+            return;
+        }
+
+        VisualElement spellWidget = new();
+        uiDocument.rootVisualElement.Add(spellWidget);
+        spellWidget.style.flexDirection = FlexDirection.Row;
+        spellWidget.style.position = Position.Absolute;
+        spellWidget.style.bottom = 0;
+        spellWidget.style.paddingBottom = 5f;
+        spellWidget.style.left = 0;
+        spellWidget.style.paddingLeft = 5f;
+
+        for (int i = 0; i < player.spellInventory.GetSpellCount(); i++)
+        {
+            SpellData currentSpell = player.spellInventory.GetSpells()[i];
+            Image spellImage = new();
+            float spellSize = 15;
+            if (player.spellInventory.GetCurrentSpell() == currentSpell) spellSize *= 1.5f;
+            spellImage.style.height = spellSize;
+            spellImage.style.width = spellSize;
+            spellImage.style.paddingLeft = 5f;
+            spellImage.style.paddingBottom = 5f;
+            spellImage.sprite = currentSpell.GetSpellbookAnimation().frames[0];
+            spellWidget.Add(spellImage);
+        }
     }
 
     private void Retreat(ClickEvent evt)
     {
         Debug.Log("Retreating!");
-        FindObjectOfType<LevelGenerator>().GenerateShip();
+        FindObjectOfType<LevelGenerator>().GenerateSummerHouse();
         Draw();
     }
 }

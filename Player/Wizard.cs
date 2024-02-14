@@ -5,6 +5,8 @@ public class Wizard : MonoBehaviour
 {
     public PlayerConfig playerConfig;
     public SpellInventory spellInventory;
+    private SlopeDetector slopeDetectorRight;
+    private SlopeDetector slopeDetectorLeft;
     public CandleData candleData;
     private SpriteAnimator spriteAnimator;
     private SpriteRenderer spriteRenderer;
@@ -35,6 +37,10 @@ public class Wizard : MonoBehaviour
         gameObject.AddComponent<CapsuleCollider2D>();
 
         spellInventory = SpellInventory.Build(gameObject);
+        slopeDetectorLeft = SlopeDetector.Build(gameObject, new Vector2(-0.382f, -0.33f), 0.1f);
+        slopeDetectorLeft.gameObject.name = "SlopeDetectorLeft";
+        slopeDetectorRight = SlopeDetector.Build(gameObject, new Vector2(0.085f, -0.33f), 0.1f);
+        slopeDetectorRight.gameObject.name = "SlopeDetectorRight";
     }
 
     private void Update()
@@ -44,22 +50,18 @@ public class Wizard : MonoBehaviour
         {
             if (facingRight) Flip();
             animationToPlay = playerConfig.runAnimation;
-            // if (Math.Abs(rb.velocity.x) < curMaxSpeed)
-            // {
-            //     rb.AddForce(Vector2.left);
-            // };
-            rb.velocity = new Vector2(-curMaxSpeed, rb.velocity.y);
         }
         else if (Input.GetKey(KeyCode.D))
         {
             if (!facingRight) Flip();
             animationToPlay = playerConfig.runAnimation;
-            // if (Math.Abs(rb.velocity.x) < curMaxSpeed)
-            // {
-            //     rb.AddForce(Vector2.right);
-            // };
-            rb.velocity = new Vector2(curMaxSpeed, rb.velocity.y);
         }
+
+        if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (Math.Abs(rb.velocity.y) < 0.1f)
@@ -80,6 +82,25 @@ public class Wizard : MonoBehaviour
         }
         if (attacking) animationToPlay = playerConfig.attackAnimation;
         if (animationToPlay != spriteAnimator.GetAnimation()) spriteAnimator.SetAnimation(animationToPlay);
+    }
+
+    private void FixedUpdate()
+    {
+        if (Input.GetKey(KeyCode.A))
+        {
+            // Vector3 moveDirection = curMaxSpeed * Time.fixedDeltaTime * Vector2.left;
+            // moveDirection += rb.gravityScale * Time.fixedDeltaTime * (Vector3)Physics2D.gravity;
+            // rb.MovePosition(transform.position + moveDirection);
+            Vector2 moveDirection = Vector2.left + Vector2.up * (slopeDetectorLeft.Detect() ? 1 : 0);
+            if (rb.velocity.magnitude < curMaxSpeed) rb.AddForce(moveDirection, ForceMode2D.Impulse);
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            // Vector3 moveDirection = curMaxSpeed * Time.fixedDeltaTime * Vector2.right;
+            // moveDirection += rb.gravityScale * Time.fixedDeltaTime * (Vector3)Physics2D.gravity;
+            Vector2 moveDirection = Vector2.right + Vector2.up * (slopeDetectorRight.Detect() ? 1 : 0);
+            if (rb.velocity.magnitude < curMaxSpeed) rb.AddForce(moveDirection, ForceMode2D.Impulse);
+        }
     }
 
     private void EndAttack()

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Golem : Entity
 {
@@ -46,6 +47,8 @@ public class Golem : Entity
     private Vector2 startPos;
     private bool attacking = false;
     private bool dying = false;
+    private float maxSpeed;
+    private bool canCastQuake = false;
 
     public void NotifyAggroEnter(GameObject target)
     {
@@ -64,11 +67,32 @@ public class Golem : Entity
     protected override void StartCall()
     {
         spriteAnimator = SpriteAnimator.Build(gameObject, golemData.idleAnimation);
+
         rb = gameObject.AddComponent<Rigidbody2D>();
         rb.freezeRotation = true;
         rb.gravityScale = 1;
         rb.drag = 0.9f;
         rb.mass *= 10;
+        maxSpeed = golemData.maxSpeed;
+
+        // Random chance to spawn a super golem
+        if (Random.Range(0, 10) < 2)
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = Color.red + Color.white / 3;
+            rb.mass *= 100;
+            maxSpeed *= 1.7f;
+            maxHealth *= 2;
+            curHealth = maxHealth;
+            transform.localScale *= 1.2f;
+            canCastQuake = true;
+
+            Light2D superIndicator = gameObject.AddComponent<Light2D>();
+            superIndicator.lightType = Light2D.LightType.Point;
+            superIndicator.intensity = 0.5f;
+            superIndicator.pointLightInnerRadius = 0;
+            superIndicator.pointLightOuterRadius = 4;
+            superIndicator.color = Color.white / 2 + Color.red;
+        }
         gameObject.AddComponent<CapsuleCollider2D>();
         gam = GolemAggroManager.Build(this, golemData.aggroRadius);
         startPos = new Vector2(transform.position.x, transform.position.y);
@@ -85,6 +109,10 @@ public class Golem : Entity
             attacking = true;
             coolingDown = true;
             spriteAnimator.SetAnimation(golemData.attackAnimation);
+            if (canCastQuake)
+            {
+                Invoke(nameof(CastQuake), golemData.attackAnimation.GetDuration() / 2);
+            }
             Invoke(nameof(EndAttack), golemData.attackAnimation.GetDuration());
             Invoke(nameof(ClearCooldown), golemData.attackCooldown);
             return;
@@ -116,6 +144,14 @@ public class Golem : Entity
         }
     }
 
+    private void CastQuake()
+    {
+        Vector2 offset;
+        if (facingRight) offset = Vector2.right;
+        else offset = Vector2.left;
+        Quake.Cast(gameObject, golemData.quakeData, Vector2.down + offset * 0.75f);
+    }
+
     private void EndAttack()
     {
         Debug.Log("Golem attack ended");
@@ -126,12 +162,12 @@ public class Golem : Entity
     private void ApproachTarget()
     {
         if (attacking) return;
-        if (target.transform.position.x < transform.position.x && rb.velocity.magnitude < golemData.maxSpeed)
+        if (target.transform.position.x < transform.position.x && rb.velocity.magnitude < maxSpeed)
         {
             Vector3 force = (Vector2.left + Vector2.up) * rb.mass;
             rb.AddForce(force, ForceMode2D.Impulse);
         }
-        else if (target.transform.position.x > transform.position.x && rb.velocity.magnitude < golemData.maxSpeed)
+        else if (target.transform.position.x > transform.position.x && rb.velocity.magnitude < maxSpeed)
         {
             Vector3 force = (Vector2.right + Vector2.up) * rb.mass;
             rb.AddForce(force, ForceMode2D.Impulse);
@@ -141,12 +177,12 @@ public class Golem : Entity
     private void ReturnHome()
     {
         if (attacking) return;
-        if (startPos.x < transform.position.x - 1 && rb.velocity.magnitude < golemData.maxSpeed)
+        if (startPos.x < transform.position.x - 1 && rb.velocity.magnitude < maxSpeed)
         {
             Vector3 force = (Vector2.left + Vector2.up) * rb.mass;
             rb.AddForce(force, ForceMode2D.Impulse);
         }
-        else if (startPos.x > transform.position.x + 1 && rb.velocity.magnitude < golemData.maxSpeed)
+        else if (startPos.x > transform.position.x + 1 && rb.velocity.magnitude < maxSpeed)
         {
             Vector3 force = (Vector2.right + Vector2.up) * rb.mass;
             rb.AddForce(force, ForceMode2D.Impulse);

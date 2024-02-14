@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpellInventory : MonoBehaviour
@@ -23,35 +24,35 @@ public class SpellInventory : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab) && spells.Count >= 2)
         {
-            if (currentSpellIndex + 1 >= spells.Count)
-            {
-                currentSpellIndex = 0;
-            }
-            else
-            {
-                currentSpellIndex += 1;
-            }
-            currentSpell = spells[currentSpellIndex];
-            Debug.Log("Switched spells to " + currentSpell.spellName);
+            SwitchSpells();
         }
+    }
+
+    private void SwitchSpells()
+    {
+        if (currentSpellIndex + 1 >= spells.Count)
+        {
+            currentSpellIndex = 0;
+        }
+        else
+        {
+            currentSpellIndex += 1;
+        }
+        currentSpell = spells[currentSpellIndex];
+        UIManager.NotifyRedraw.Invoke();
     }
 
     public void Cast(Vector3 startPos, Vector3 targetPos)
     {
-        if (!currentSpell)
-        {
-            Debug.Log("Current spell null");
-            return;
-        }
-        Debug.Log("Casting " + currentSpell.spellName);
+        if (!currentSpell) return;
         currentSpell.Cast(startPos, targetPos);
     }
 
     public void AddSpell(SpellData spellData)
     {
-        Debug.Log("Player picked up spell " + spellData.spellName);
         spells.Add(spellData);
-        currentSpell = spells[0];
+        if (!currentSpell) currentSpell = spells[0];
+        UIManager.NotifyRedraw.Invoke();
     }
 
     public int GetSpellCount()
@@ -59,6 +60,13 @@ public class SpellInventory : MonoBehaviour
         return spells.Count;
     }
 
+    public SpellData GetCurrentSpell()
+    {
+        return currentSpell;
+    }
 
-
+    public List<SpellData> GetSpells()
+    {
+        return (List<SpellData>)spells.AsReadOnlyList();
+    }
 }

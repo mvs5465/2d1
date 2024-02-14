@@ -15,6 +15,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void Start()
     {
+        gameObject.isStatic = true;
         wizard = FindObjectOfType<Wizard>();
         // Destroy(GameObject.Find("SummerHouse"));
         // GenerateSummerHouse();
@@ -165,7 +166,7 @@ public class LevelGenerator : MonoBehaviour
                 }
                 else if (diceRoll == 0)
                 {
-                    GameObject golem = Instantiate(levelGeneratorData.golem, grid.GetCellCenterWorld(new Vector3Int(curX + boxWidth / 2, curY)), Quaternion.identity);
+                    GameObject golem = Instantiate(levelGeneratorData.golem, grid.GetCellCenterWorld(new Vector3Int(curX + boxWidth / 2, curY+1)), Quaternion.identity);
                     golem.transform.parent = levelMapContainer.transform;
                 }
             }
